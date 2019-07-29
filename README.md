@@ -9,9 +9,9 @@ NodeJS server which mimics Office of Foreign Assets Control searching of blackli
 </ul>
 
 ## To run
-```
-npm install
-node server.js
+``` 
+$npm install
+$node server.js
 ```
 On curl or postman, a single post request to
 ```
