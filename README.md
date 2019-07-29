@@ -18,7 +18,7 @@ On curl or postman, a single post request to
 https://localhost:3000/verifyOfac
 ```
 with a body parament in the format of 
-``` json
+```
 {
     "name"; <name to search>
 }
