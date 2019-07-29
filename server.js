@@ -8,10 +8,11 @@ const port = process.env.PORT || 3000;
 
 const Pool = require('pg').Pool
 const pool = new Pool({
-    user: 'postgres',
+    // Fill out the details of postgres server
+    user: '',
     host: 'localhost',
-    database: 'postgres',
-    password: 'Xboxlive72',
+    database: '',
+    password: '',
     port: 5432
 })
 
