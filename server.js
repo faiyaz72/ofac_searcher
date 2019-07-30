@@ -8,11 +8,10 @@ const port = process.env.PORT || 3000;
 
 const Pool = require('pg').Pool
 const pool = new Pool({
-    // Fill out the details of postgres server
-    user: '',
-    host: 'localhost',
-    database: '',
-    password: '',
+    user: 'reg_compl',
+    host: '192.168.11.206',
+    database: 'reg_compl',
+    password: 'ticktrade',
     port: 5432
 })
 
@@ -38,9 +37,13 @@ app.get('/testSdnNames', async (req, res) => {
 
 app.post('/verifyOfac', async (req, res) => {
 
+
     const toTest = utils.toSearch(req.body.name);
     let aggregator = { results: {} };
-    
+
+    // FROM, WHO, WHAT;
+    console.log(`Received request for string ${toTest} From ${req.ip}`);
+
     let search3, search4, search5, search6, search7, search8
 
     const search1 = await pool.query(utils.nonIndividualQuery("SDN", "ALT", toTest))
