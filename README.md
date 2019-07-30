@@ -20,7 +20,7 @@ https://localhost:3000/verifyOfac
 with a body parament in the format of 
 ```
 {
-    "name"; "string"
+    "name": "string"
 }
 ```
 Response will be in the format of
