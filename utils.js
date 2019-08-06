@@ -7,7 +7,7 @@ const schema = "ofac";
 const toSearch = (toTest) => {
 
     const filtered = toTest.replace(/[^a-zA-Z0-9\s]+/,"");
-    const lowered = filtered.toLowerCase();
+    const lowered = filtered.trim().toLowerCase();
     return "'" + lowered + "'";
 }
 
@@ -18,7 +18,8 @@ const nonIndividualQuery = (table1, table2, toTest) => {
 }
 
 const individualQuerySingle = (table1, table2, firstName, toTest) => {
-    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest})) as score 
+    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest}), levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 2))), ${toTest}), 
+    levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 2))), ${toTest})) as score 
     from ${schema}.\"${table1}\" s1 LEFT JOIN ${schema}.\"${table2}\" a1 ON s1.ent_num = a1.ent_num 
     where s1.sdn_type = 'individual' AND (
         (dmetaphone(trim(from split_part(s1.sdn_name, ',', 2))) = dmetaphone(${firstName}) or dmetaphone(trim(from split_part(a1.alt_name, ',', 2))) = dmetaphone(${firstName})) 
@@ -28,7 +29,8 @@ const individualQuerySingle = (table1, table2, firstName, toTest) => {
 }
 
 const individualQueryNonSingle = (table1, table2, firstName, lastName, toTest) => {
-    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest})) as score 
+    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest}), levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 2))), ${toTest}), 
+    levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 2))), ${toTest})) as score 
     from ${schema}.\"${table1}\" s1 LEFT JOIN ${schema}.\"${table2}\" a1 ON s1.ent_num = a1.ent_num 
     where s1.sdn_type = 'individual' AND (
         (dmetaphone(trim(from split_part(s1.sdn_name, ',', 2))) = dmetaphone(${firstName}) or dmetaphone(trim(from split_part(a1.alt_name, ',', 2))) = dmetaphone(${firstName})) 

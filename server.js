@@ -42,7 +42,11 @@ app.post('/verifyOfac', async (req, res) => {
     let aggregator = { results: {} };
 
     // FROM, WHO, WHAT;
-    console.log(`Received request for string ${toTest} From ${req.ip}`);
+
+    const today = new Date();
+    const date = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}, ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+
+    console.log(`Received request for String "${req.body.name}" From ${req.ip} on ${date}`);
 
     let search3, search4, search5, search6, search7, search8
 
@@ -96,6 +100,7 @@ app.post('/verifyOfac', async (req, res) => {
 
     aggregator.l_score_threshold = utils.levenshteinScore(toTest);
 
+    console.log(`Request handled for ${req.ip}`)
     res.send(aggregator);
 })
 
