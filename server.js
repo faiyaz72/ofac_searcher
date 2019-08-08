@@ -86,21 +86,21 @@ app.post('/verifyOfac', async (req, res) => {
 
 
     if (aggregator.results.length === 0) {
-        aggregator.minimum_score = -1;
+        aggregator.min_score = -1;
     } else {
-        aggregator.minimum_score = utils.findMinimumScore(aggregator.results);
+        aggregator.min_score = utils.findMinimumScore(aggregator.results);
     }
 
-    if (aggregator.minimum_score > 3 || aggregator.minimum_score === -1) {
+    if (aggregator.min_score > 3 || aggregator.min_score === -1) {
         aggregator.ofac_passed = true;
     } else {
         aggregator.ofac_passed = false;
     }
 
-    if (aggregator.minimum_score === -1) {
+    if (aggregator.min_score === -1) {
         aggregator.max_percentage = 0
     } else {
-        aggregator.max_percentage = (100 - aggregator.minimum_score);
+        aggregator.max_percentage = (100 - aggregator.min_score);
     }
 
     aggregator.l_score_threshold = utils.levenshteinScore(toTest);
