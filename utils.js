@@ -44,19 +44,9 @@ const levenshteinScore = (toCompare) => {
     return Math.ceil(levenshteinThresholdPercentage * stringLength);
 }
 
-// const sdnNameExist = (values, sdnName) => {
-//     return values.indexOf(sdnName) > -1
-// }
-
 const sdnNameExist = (resultList, nameToCheck) => {
     return resultList.matched_names.indexOf(nameToCheck) > -1
 }
-
-// const addAltName = (aggregator, altName, score) => {
-//     if (altName && aggregator[score].indexOf(altName) === -1) {
-//         aggregator[score].push(altName);
-//     }
-// }
 
 const addAltName = (resultList, altName) => {
     if (altName && resultList.matched_names.indexOf(altName) === -1) {
@@ -118,18 +108,6 @@ const aggregateQuery = (queryResult, aggregator, toTest) => {
         if (score > levenshteinThreshold) {
             break;
         }
-
-        // if (score in aggregator) {
-        //     addAltName(aggregator, altName, score);
-        //     if (!sdnNameExist(aggregator[score], sdnName)) {
-        //         aggregator[score].push(sdnName);
-        //     }
-        // } else {
-        //     let newList = [];
-        //     newList.push(sdnName);
-        //     aggregator[score] = newList;
-        //     addAltName(aggregator, altName, score); 
-        // }
 
         const scoreIndex = scoreExists(aggregator, score);
 

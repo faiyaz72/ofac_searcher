@@ -85,10 +85,9 @@ app.post('/verifyOfac', async (req, res) => {
     utils.aggregateQuery(search4.rows, aggregator.results, toTest);
 
 
-    if (Object.keys(aggregator.results).length === 0 && aggregator.results.constructor === Object) {
+    if (aggregator.results.length === 0) {
         aggregator.minimum_score = -1;
     } else {
-
         aggregator.minimum_score = utils.findMinimumScore(aggregator.results);
     }
 
