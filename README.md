@@ -25,37 +25,30 @@ with a body parament in the format of
 ```
 Response will be in the format of
 ``` json
-{
-    "results": {
-        "2": [
-            "KONY, Salim",
-            "SALEH, Salim"
-        ],
-        "5": [
-            "SALIM S.A."
-        ],
-        "6": [
-            "SYAWAL, Yassin",
-            "YASIN, Salim"
-        ],
-        "7": [
-            "KONY, Salim",
-            "KONY, Salim Saleh",
-            "OGARO, Salim Saleh Obol"
-        ],
-        "10": [
-            "AL-KUWARI, Salim Hasan Khalifah Rashid",
-            "AL-KUWARI, Salem"
-        ],
-        "11": [
-            "AL-KUWARI, Salim Hasan Khalifah Rashid",
-            "AL-KOWARI, Salim"
-        ]
-    },
-    "minimum_score": "2",
+    "results": [
+        {
+            "score": 0,
+            "matched_names": [
+                "HASSAN AYASH EXCHANGE COMPANY",
+                "HASSAN AYAS PARTNER EXCHANGE CO",
+                "AYASH XCHANGE CO.",
+                "AYASH EXCHANGE COMPANY SARL",
+                "MAKDESSI SAYRAFI COMPANY",
+                "HASSANE AYASH EXCHANGE CO. SARL",
+                "HASSAN AYACH EXCHANGE"
+            ]
+        },
+        {
+            "score": 17,
+            "matched_names": [
+                "AL-DULAYMI, Hasan Hashim Khalaf"
+            ]
+        }
+    ],
+    "min_score": 0,
     "ofac_passed": false,
-    "l_score_threshold": 12
-}
+    "max_percentage": 100,
+    "l_score_threshold": 28
 ```
 
 Where the the lesser the score, the more closer it is to the searched string with 0 or 1 being a perfect match.
