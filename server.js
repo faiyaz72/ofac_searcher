@@ -39,7 +39,7 @@ app.post('/verifyOfac', async (req, res) => {
 
 
     const toTest = utils.toSearch(req.body.name);
-    let aggregator = { results: {} };
+    let aggregator = { results: [] };
 
     // FROM, WHO, WHAT;
 
@@ -89,13 +89,19 @@ app.post('/verifyOfac', async (req, res) => {
         aggregator.minimum_score = -1;
     } else {
 
-        aggregator.minimum_score = Object.keys(aggregator.results)[0];
+        aggregator.minimum_score = utils.findMinimumScore(aggregator.results);
     }
 
     if (aggregator.minimum_score > 3 || aggregator.minimum_score === -1) {
         aggregator.ofac_passed = true;
     } else {
         aggregator.ofac_passed = false;
+    }
+
+    if (aggregator.minimum_score === -1) {
+        aggregator.max_percentage = 0
+    } else {
+        aggregator.max_percentage = (100 - aggregator.minimum_score);
     }
 
     aggregator.l_score_threshold = utils.levenshteinScore(toTest);

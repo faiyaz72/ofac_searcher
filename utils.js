@@ -44,13 +44,23 @@ const levenshteinScore = (toCompare) => {
     return Math.ceil(levenshteinThresholdPercentage * stringLength);
 }
 
-const sdnNameExist = (values, sdnName) => {
-    return values.indexOf(sdnName) > -1
+// const sdnNameExist = (values, sdnName) => {
+//     return values.indexOf(sdnName) > -1
+// }
+
+const sdnNameExist = (resultList, nameToCheck) => {
+    return resultList.matched_names.indexOf(nameToCheck) > -1
 }
 
-const addAltName = (aggregator, altName, score) => {
-    if (altName && aggregator[score].indexOf(altName) === -1) {
-        aggregator[score].push(altName);
+// const addAltName = (aggregator, altName, score) => {
+//     if (altName && aggregator[score].indexOf(altName) === -1) {
+//         aggregator[score].push(altName);
+//     }
+// }
+
+const addAltName = (resultList, altName) => {
+    if (altName && resultList.matched_names.indexOf(altName) === -1) {
+        resultList.matched_names.push(altName);
     }
 }
 
@@ -85,6 +95,17 @@ const extractFirstLastNames = (toTest) => {
     return result;
 }
 
+const scoreExists = (resultList, scoreToCheck) => {
+
+    for (let i = 0; i < resultList.length; i++) {
+        if (resultList[i].score === scoreToCheck) {
+            return i
+        }
+    }
+
+    return -1;
+}
+
 const aggregateQuery = (queryResult, aggregator, toTest) => {
 
     const levenshteinThreshold = levenshteinScore(toTest);
@@ -98,18 +119,42 @@ const aggregateQuery = (queryResult, aggregator, toTest) => {
             break;
         }
 
-        if (score in aggregator) {
-            addAltName(aggregator, altName, score);
-            if (!sdnNameExist(aggregator[score], sdnName)) {
-                aggregator[score].push(sdnName);
+        // if (score in aggregator) {
+        //     addAltName(aggregator, altName, score);
+        //     if (!sdnNameExist(aggregator[score], sdnName)) {
+        //         aggregator[score].push(sdnName);
+        //     }
+        // } else {
+        //     let newList = [];
+        //     newList.push(sdnName);
+        //     aggregator[score] = newList;
+        //     addAltName(aggregator, altName, score); 
+        // }
+
+        const scoreIndex = scoreExists(aggregator, score);
+
+        if (scoreIndex > -1) {
+            addAltName(aggregator[scoreIndex], altName);
+            if (!sdnNameExist(aggregator[scoreIndex], sdnName)) {
+                aggregator[scoreIndex].matched_names.push(sdnName);
             }
         } else {
-            let newList = [];
-            newList.push(sdnName);
-            aggregator[score] = newList;
-            addAltName(aggregator, altName, score); 
+            let newEntry = {score: score, matched_names: [sdnName]}
+            const newIndex = aggregator.length;
+            aggregator.push(newEntry);
+            addAltName(aggregator[newIndex], altName);
         }
     }
+}
+
+const findMinimumScore = (resultList) => {
+    let minimumScore = resultList[0].score;
+    for (let i = 0; i < resultList.length; i++) {
+        if (resultList[i].score < minimumScore) {
+            minimumScore = resultList[i].score;
+        }
+    }
+    return minimumScore;
 }
 
 module.exports = {
@@ -122,4 +167,5 @@ module.exports = {
     individualQueryNonSingle,
     reverseSearch,
     levenshteinScore,
+    findMinimumScore
 }
