@@ -33,6 +33,14 @@ app.get('/testSdnNames', async (req, res) => {
     res.send(results["rows"]);
 })
 
+const getDateTime = () => {
+    const today = new Date();
+    return `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}, ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+}
+
+const compare = (a, b) => {
+    return a.score - b.score;
+  }
 
 
 app.post('/verifyOfac', async (req, res) => {
@@ -43,8 +51,7 @@ app.post('/verifyOfac', async (req, res) => {
 
     // FROM, WHO, WHAT;
 
-    const today = new Date();
-    const date = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}, ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
+    const date = getDateTime();
 
     console.log(`Received request for String "${req.body.name}" From ${req.ip} on ${date}`);
 
@@ -89,6 +96,9 @@ app.post('/verifyOfac', async (req, res) => {
         aggregator.min_score = -1;
     } else {
         aggregator.min_score = utils.findMinimumScore(aggregator.results);
+        aggregator.results.sort((a, b) => {
+            return a.score - b.score;
+          })
     }
 
     if (aggregator.min_score > 3 || aggregator.min_score === -1) {
@@ -111,5 +121,5 @@ app.post('/verifyOfac', async (req, res) => {
 
 
 app.listen(port, () => {
-    console.log(`OFAC Search server running on port ${port}`)
+    console.log(`OFAC Search server start on ${getDateTime()}, port: ${port} `)
 })

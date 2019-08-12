@@ -54,6 +54,12 @@ const addAltName = (resultList, altName) => {
     }
 }
 
+const updateScore = (focusedObject, scoreToCheck) => {
+    if (focusedObject.score > scoreToCheck) {
+        focusedObject.score = scoreToCheck
+    }
+}
+
 const getReverse = (toTest) => {
     const stringLength = toTest.length;
     const firstName = toTest.substring(1, toTest.lastIndexOf(" "));
@@ -96,6 +102,18 @@ const scoreExists = (resultList, scoreToCheck) => {
     return -1;
 }
 
+const entExists = (resultList, entToCheck) => {
+
+    for (let i = 0; i < resultList.length; i++) {
+        if (resultList[i].ent_num === entToCheck) {
+            return i
+        }
+    }
+
+    return -1;
+
+}
+
 const aggregateQuery = (queryResult, aggregator, toTest) => {
 
     const levenshteinThreshold = levenshteinScore(toTest);
@@ -104,20 +122,22 @@ const aggregateQuery = (queryResult, aggregator, toTest) => {
         const sdnName = queryResult[i].sdn_name;
         const altName = queryResult[i].alt_name
         const score = queryResult[i].score;
+        const entNum = queryResult[i].ent_num;
 
         if (score > levenshteinThreshold) {
             break;
         }
 
-        const scoreIndex = scoreExists(aggregator, score);
+        const entIndex = entExists(aggregator, entNum);
 
-        if (scoreIndex > -1) {
-            addAltName(aggregator[scoreIndex], altName);
-            if (!sdnNameExist(aggregator[scoreIndex], sdnName)) {
-                aggregator[scoreIndex].matched_names.push(sdnName);
+        if (entIndex > -1) {
+            addAltName(aggregator[entIndex], altName);
+            if (!sdnNameExist(aggregator[entIndex], sdnName)) {
+                aggregator[entIndex].matched_names.push(sdnName);
             }
+            updateScore(aggregator[entIndex], score);
         } else {
-            let newEntry = {score: score, matched_names: [sdnName]}
+            let newEntry = {ent_num: entNum, score: score, matched_names: [sdnName]}
             const newIndex = aggregator.length;
             aggregator.push(newEntry);
             addAltName(aggregator[newIndex], altName);
