@@ -12,13 +12,13 @@ const toSearch = (toTest) => {
 }
 
 const nonIndividualQuery = (table1, table2, toTest) => {
-    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest})) as score 
+    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, s1.remarks, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest})) as score 
     from ${schema}.\"${table1}\" s1 LEFT JOIN ${schema}.\"${table2}\" a1 ON s1.ent_num = a1.ent_num 
     where s1.sdn_type != 'individual' AND (dmetaphone(s1.sdn_name) = dmetaphone(${toTest}) OR dmetaphone(a1.alt_name) = dmetaphone(${toTest})) ORDER BY score;` 
 }
 
 const individualQuerySingle = (table1, table2, firstName, toTest) => {
-    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest}), levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 2))), ${toTest}), 
+    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, s1.remarks, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest}), levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 2))), ${toTest}), 
     levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 2))), ${toTest})) as score 
     from ${schema}.\"${table1}\" s1 LEFT JOIN ${schema}.\"${table2}\" a1 ON s1.ent_num = a1.ent_num 
     where s1.sdn_type = 'individual' AND (
@@ -29,7 +29,7 @@ const individualQuerySingle = (table1, table2, firstName, toTest) => {
 }
 
 const individualQueryNonSingle = (table1, table2, firstName, lastName, toTest) => {
-    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest}), levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 2))), ${toTest}), 
+    return `SELECT s1.ent_num, s1.sdn_name, a1.alt_name, s1.remarks, LEAST(levenshtein(lower(s1.sdn_name), ${toTest}), levenshtein(lower(a1.alt_name), ${toTest}), levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 2))), ${toTest}), 
     levenshtein(lower(trim(from split_part(s1.sdn_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 1))), ${toTest}), levenshtein(lower(trim(from split_part(a1.alt_name, ',', 2))), ${toTest})) as score 
     from ${schema}.\"${table1}\" s1 LEFT JOIN ${schema}.\"${table2}\" a1 ON s1.ent_num = a1.ent_num 
     where s1.sdn_type = 'individual' AND (
@@ -123,6 +123,7 @@ const aggregateQuery = (queryResult, aggregator, toTest) => {
         const altName = queryResult[i].alt_name
         const score = queryResult[i].score;
         const entNum = queryResult[i].ent_num;
+        const remarks = queryResult[i].remarks;
 
         if (score > levenshteinThreshold) {
             break;
@@ -132,12 +133,9 @@ const aggregateQuery = (queryResult, aggregator, toTest) => {
 
         if (entIndex > -1) {
             addAltName(aggregator[entIndex], altName);
-            if (!sdnNameExist(aggregator[entIndex], sdnName)) {
-                aggregator[entIndex].matched_names.push(sdnName);
-            }
             updateScore(aggregator[entIndex], score);
         } else {
-            let newEntry = {ent_num: entNum, score: score, matched_names: [sdnName]}
+            let newEntry = {ent_num: entNum, score: score, sdn_name: sdnName, matched_names: [], remarks: remarks}
             const newIndex = aggregator.length;
             aggregator.push(newEntry);
             addAltName(aggregator[newIndex], altName);
